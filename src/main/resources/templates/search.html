@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h6><a href="/">back</a></h6>
+                </div>
+                <table class="table span12" id="dev-table">
+                    <thead>
+                    <tr>
+                        <th style="width: 70%">Description</th>
+                        <th style="width: 20%">Options</th>
+                        <th style="width: 10%">Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#result}}
+                    <tr class="clickable-row" onclick="window.document.location='https://www.doska.ru{{#.}}{{uri}}{{/.}}';">
+                        <td >{{#.}}{{description}}{{/.}}</td>
+                        <td>{{#.}}{{options}}{{/.}}</td>
+                        <td>{{#.}}{{price}}{{/.}}</td>
+                    </tr>
+                    {{/result}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../js/jquery-3.2.1.min.js"></script>
+<script src="../js/popper.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -15,10 +15,8 @@ public class ScheduledTasks {
     @Autowired
     private ParserService parserService;
 
-
     @Scheduled(fixedDelay = 1000*3600*2)
     public void parsing() throws Exception {
-        log(this,"Start scheduled parsing");
         if (parserService.connect()) {
             parserService.startParse();
         }

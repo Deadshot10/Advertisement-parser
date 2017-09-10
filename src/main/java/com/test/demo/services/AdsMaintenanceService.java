@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static com.test.demo.Util.log;
 
-
 @Service
 public class AdsMaintenanceService {
 
@@ -44,7 +43,7 @@ public class AdsMaintenanceService {
         return categoryRepository.findAll();
     }
 
-    public Region getRegionByName(String name){
+    private Region getRegionByName(String name){
         Region region = regionRepository.findOneRegionByName(name);
         if (region == null) {
             region = new Region();
@@ -54,7 +53,7 @@ public class AdsMaintenanceService {
         return region;
     }
 
-    public Category getCategoryByName(String name){
+    private Category getCategoryByName(String name){
         Category category = categoryRepository.findOneCategoryByName(name);
         if (category == null) {
             category = new Category();
@@ -71,7 +70,7 @@ public class AdsMaintenanceService {
     }
     private volatile Thread writerThread;
 
-    public void notifyWriter(){
+    private void notifyWriter(){
         if (writerThread == null || writerThread.getState() == Thread.State.TERMINATED) {
             writerThread = new Thread(writer);
             writerThread.start();
@@ -100,7 +99,7 @@ public class AdsMaintenanceService {
                     }
                 }
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

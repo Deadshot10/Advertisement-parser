@@ -14,7 +14,7 @@ public class Item {
     @Column(length = 20000)
     public String description;
 
-    public String price;
+    public Long price;
 
     @Column(unique = true)
     public String uri;

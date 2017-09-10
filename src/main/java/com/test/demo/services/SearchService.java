@@ -1,21 +1,16 @@
 package com.test.demo.services;
 
-import com.test.demo.Advertisement;
+import com.test.demo.Util;
+import com.test.demo.entity.Category;
 import com.test.demo.entity.Item;
+import com.test.demo.entity.Region;
 import com.test.demo.repositories.CategoryRepository;
 import com.test.demo.repositories.ItemRepository;
 import com.test.demo.repositories.RegionRepository;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
+@Service
 public class SearchService {
 
     private final ItemRepository itemRepository;
@@ -30,31 +25,50 @@ public class SearchService {
         this.categoryRepository = categoryRepository;
     }
 
-    //get ads where DESCRIPTION, OPTIONS contains keywords and
-    //              CATEGORY = category and
-    //              REGION = region
-    public Iterable<Item> search(String keywords, long category , long region){
+    public Iterable<Item> search(String p_keywords, String p_category , String p_region, String p_min, String p_max){
+        String keywords = p_keywords.trim();
+        Category category = categoryRepository.findOne(Long.parseLong(p_category));
+        Region region = regionRepository.findOne(Long.parseLong(p_region));
+        long max = Util.tryParse(p_max);
+        long min = Util.tryParse(p_min);
+        if (category != null && region != null && max != -1L && min != -1L)
+            return itemRepository.findAllByDescriptionContainsAndCategoryLikeAndRegionLikeAndPriceBetween(
+                    keywords, category, region, max, min);
+        else if (category != null && region != null)
+            return itemRepository.findAllByDescriptionContainsAndCategoryLikeAndRegionLike(
+                    keywords, category, region);
+        else if (min != -1L && max != -1L)
+            return itemRepository.findAllByDescriptionContainsAndPriceBetween(keywords, min, max);
+        else if (min != -1L)
+            return itemRepository.findAllByDescriptionContainsAndPriceIsGreaterThanEqual(keywords, min);
+        else if (max != -1L)
+            return itemRepository.findAllByDescriptionContainsAndPriceIsLessThanEqual(keywords, max);
+        else if (category != null)
+                return itemRepository.findAllByDescriptionContainsAndCategoryLike(keywords, category);
+        else if (region != null)
+                return itemRepository.findAllByDescriptionContainsAndRegionLike(keywords, region);
+        return itemRepository.findAllByDescriptionContains(keywords);
+    }
+
+    public Iterable<Item> search(String keywords, String category , String region){
         return itemRepository.findAll();
     }
 
-    //EntityManager entityManager;
+    public Iterable<Item> search(String keyword){
+        return itemRepository.findAllByDescriptionContains(keyword);
+    }
 
-//    public Iterable<Item> findAllByKeywords(List<String> keywords){
-//        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<Item> query = builder.createQuery(Item.class);
-//        Root<Item> root = query.from(Item.class);
-//
-//        List<Predicate> predicates = new LinkedList<>();
-//        for (String keyword : keywords) {
-//            predicates.add(builder.like(root.<String>get("keywords"), "%" + keyword + "%"));
-//        }
-//
-//        return entityManager.createQuery(
-//                query.select(root).where(
-//                        builder.or(
-//                                predicates.toArray(new Predicate[predicates.size()])
-//                        )
-//                ))
-//                .getResultList();
-//    }
 }
+
+//class ItemSpecification {
+//    public static Specification<Item> itemContainsWord(final String word) {
+//        return new Specification<Item>() {
+//            @Override
+//            public Predicate toPredicate(Root<Item> root,
+//                                         CriteriaQuery<?> criteriaQuery,
+//                                         CriteriaBuilder criteriaBuilder) {
+//                return criteriaBuilder.equal(root.get("description"), word);
+//            }
+//        };
+//    }
+//}

@@ -6,7 +6,7 @@ public class Advertisement {
 
     public String description;
     public String uri;
-    public String price;
+    public Long price;
     public String region;
     public String category;
     public JsonObject options;

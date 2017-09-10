@@ -1,20 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-<script type="text/javascript">
-    fetch("/api/visits")
-        .then(response => response.json())
-        .then(visits => {
-            visits.forEach(visit => {
-                const el = document.createElement('li');
-                el.innerText = visit.description;
-                document.querySelector('#visits').append(el);
-            });
-        });
-</script>
-
+<head>
+    <meta charset="UTF-8">
+    <title>Some kind a google machine</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
 <body>
-<h1>Welcome to Spring!</h1>
-<ul id="visits">
-</ul>
+<div class="col-md-12 mx-auto" style="float: none;display: block;margin: 0 auto">
+    <form class="form-horizontal" action="/api/search" id="form1">
+        <fieldset>
+            <!-- Form Name -->
+            <legend class="text-center">Search ads from www.doska.ru</legend>
+            <!-- Text input-->
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search for...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary">Go!</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <!-- Select Basic -->
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-md-12 control-label text-center" for="region">Region</label>
+                        <div class="col-md-8 mx-auto">
+                            <select id="region" name="region" class="form-control">
+                                <option value=0></option>
+                                {{#regions}}
+                                <option value={{key}}>{{value}}</option>
+                                {{/regions}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <!-- Select Basic -->
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-md-12 control-label text-center" for="category">Category</label>
+                        <div class="col-md-8 mx-auto">
+
+                            <select id="category" name="category" class="form-control">
+                                <option value=0></option>
+                                {{#categories}}
+                                <option value={{key}}>{{value}}</option>
+                                {{/categories}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <!-- Select Basic -->
+                <div class="form-inline">
+                    <label class="col-md-12 control-label text-center">Price range</label>
+
+                    <div class="row mx-auto">
+                        <div class="col">
+                            <input type="text" class="form-control" id="min" name="min" placeholder="min">
+                        </div>
+                        <div class="col">
+                            <span>-</span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" id="max" name="max" placeholder="max">
+                        </div>
+                    </div>
+
+                </div>
+
+        </fieldset>
+    </form>
+</div>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 </body>
 </html>

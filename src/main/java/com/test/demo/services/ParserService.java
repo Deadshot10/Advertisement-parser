@@ -2,6 +2,7 @@ package com.test.demo.services;
 
 import com.google.gson.JsonObject;
 import com.test.demo.Advertisement;
+import com.test.demo.Util;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -43,11 +44,8 @@ public class ParserService {
         try {
             Elements categories = mainPage.select("a[id^='mtd_']");
             for (Element category: categories) {
-                //category url (name) used to check is already parsed
                 String categoryLink = category.attr("href");
-
                 Document categoryPage = Jsoup.connect(BASE_URL + categoryLink).get();
-
                 parsePage(categoryPage);
             }
         } catch (IOException e) {
@@ -56,7 +54,6 @@ public class ParserService {
     }
 
     private void parsePage(Document page) throws IOException {
-        log("Start parse: ", page.location());
         //CHECK WHAT WE HAVE - SUBCATEGORY OR GOODS LISTS
         Elements subCategories = page.select("[id^='sc_']");
         Elements items = page.select("[id^='tr_']");
@@ -74,6 +71,7 @@ public class ParserService {
                     Connection connection = Jsoup.connect(BASE_URL + subCategoryLink);
                     connection.timeout(120000);//java.net.SocketException: Connection reset
                     Document subCategoryPage = connection.get();
+
                     parsePage(subCategoryPage);
                 }
             }
@@ -88,15 +86,21 @@ public class ParserService {
 
         Document itemPage = Jsoup.connect(BASE_URL + advertisement.uri).get();
         //Attributes from item page
-        advertisement.description = itemPage.select("div#msg_div_msg").text();
-        advertisement.price = itemPage.select("span#tdo_8").text();
+        Element descriptionMsg = itemPage.select("div#msg_div_msg").first();
+        advertisement.description = (descriptionMsg != null) ? descriptionMsg.ownText():"";
+        String price = itemPage.select("span#tdo_8").text().replaceAll("\\D+", "");
+        advertisement.price = (price.isEmpty())? -1 : Long.parseLong(price);
 
         Elements categoryLevels = itemPage.select(".headtitle>a");
-        StringBuilder categorySB = new StringBuilder("/");
-        for (Element catLvl : categoryLevels) {
-            categorySB.append(catLvl.text()).append("/");
-        }
-        advertisement.category = categorySB.toString();
+//        StringBuilder categorySB = new StringBuilder("/");
+//        for (Element catLvl : categoryLevels) {
+//            categorySB.append(catLvl.text()).append("/");
+//        }
+//        advertisement.category = categorySB.toString();
+        if (!categoryLevels.isEmpty())
+            advertisement.category = categoryLevels.get(0).text();
+        else
+            advertisement.category = "?";
 
         advertisement.options = new JsonObject();
         Elements options = itemPage.select("td[id^='tdo_']");
@@ -110,13 +114,4 @@ public class ParserService {
         return advertisement;
     }
 
-
-    private static int count = 5;
-    private static void BREAKING_THE_WALL () throws Exception {
-        if (count > 0) {
-            count--;
-        } else {
-            throw new Exception();
-        }
-    }
 }
