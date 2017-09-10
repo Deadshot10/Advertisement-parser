@@ -11,3 +11,6 @@ Connection parametrs via console:
   JDBC URL - "jdbc:h2:~/testdb",
   name - "sa",
   pass - ""
+  
+Search working like a String.contains(). -_- 
+Parsing runs after the server is started
